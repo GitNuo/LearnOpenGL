@@ -1,16 +1,18 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <string>
+#include <assert.h>
+
+#include "wrapper/checkError.h"
 
 /*
 	*target:
-	1. 使用glad加载所有当前版本需要的opengl函数
-	2. 查看glad的源代码，并且理解她做了什么
-	3. 函数练习
-		3.1 glViewport：规定视口大小
-		3.2 glClearColor：设置画布清理的颜色
-		3.3 glClear（GL_COLOR_BBUFFERRBIT）：执行画布清理操作
-		3.4 glfwSwapBuffers（window）：执行双缓存切换
+	1. 体验glGetError
+	2. 封装错误检查函数
+	3. 将错误检查代码放到其他的cpp文件
+	4. 创建了GL_CALL这个宏，便捷进行g1函数查错
+	5. 添加 预编译宏, 在CMakeLists.txt中控制
 */
 
 // Declare and implement a function that responds to changes in window size
@@ -57,8 +59,8 @@ int main()
 	}
 
 	// set openal View and clear color
-	glViewport(0, 0, 800, 600);
-	glClearColor(0.2f, 0.3f, 0.3f, 0.0);
+	GL_CALL(glViewport(0, 0, 800, 600));
+	GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 0.0));
 
 
 // 3. execute a window loop
@@ -72,7 +74,8 @@ int main()
 		glfwPollEvents();
 
 		// Execute opengl canvas cleaning operation
-		glClear(GL_COLOR_BUFFER_BIT);
+		GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+
 
 		// Rendering operations
 
