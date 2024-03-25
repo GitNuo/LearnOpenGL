@@ -2,6 +2,27 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+/*
+	*target:
+	-create glfw window system
+	-add window change callback function
+*/
+
+// Declare and implement a function that responds to changes in window size
+void farmeBufferSizeCallBack(GLFWwindow* window, int width, int height)
+{
+	std::cout << "width:" << width << "height:" << height << std::endl;
+}
+
+// Declare and implement a function keyboard msg 
+void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_W)
+	{
+		std::cout << "press:" << key << std::endl;
+	}
+}
+
 int main()
 {
 // 1. init GLFW 
@@ -16,6 +37,12 @@ int main()
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGLStudy", NULL, NULL);
 	// set the current window object to OpenGL's drawing stage
 	glfwMakeContextCurrent(window);
+
+	// set up listening to listen for messages about changes in window size
+	glfwSetFramebufferSizeCallback(window, farmeBufferSizeCallBack);
+
+	// set keyboard listening
+	glfwSetKeyCallback(window, keyCallBack);
 
 // 3. execute a window loop
 	while (!glfwWindowShouldClose(window))
