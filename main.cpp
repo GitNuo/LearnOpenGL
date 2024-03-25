@@ -5,58 +5,50 @@
 #include <assert.h>
 
 #include "wrapper/checkError.h"
+#include "application/Application.h"
 
 /*
 	*target:
-	1. 体验glGetError
-	2. 封装错误检查函数
-	3. 将错误检查代码放到其他的cpp文件
-	4. 创建了GL_CALL这个宏，便捷进行g1函数查错
-	5. 添加 预编译宏, 在CMakeLists.txt中控制
+	1. 编写一个单例类的Application
+    2. 编写一个OnResize, 响应窗体发生变化
 */
 
-// Declare and implement a function that responds to changes in window size
-void farmeBufferSizeCallBack(GLFWwindow* window, int width, int height)
+void OnResize(int width, int height)
 {
-	std::cout << "width:" << width << "height:" << height << std::endl;
+	GL_CALL(glViewport(0, 0, width, height));
+	//std::cout << "OnResize:" << std::endl;
 }
 
-// Declare and implement a function keyboard msg 
-void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods)
+void OnKeyBoard(int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_W)
-	{
-		std::cout << "press:" << key << std::endl;
-	}
+	std::cout << "keyBoard:" << key << std::endl;
+}
+
+void OnMouseBoard(int button, int action, int mods)
+{
+	std::cout << "----------------[in]---------------" << std::endl;
+	std::cout << "button:" << button << std::endl;
+	std::cout << "action:" << action << std::endl;
+	std::cout << "mods:" << mods << std::endl;
+
 }
 
 int main()
 {
-// 1. init GLFW 
-	glfwInit();
-	// 1.1 set glfw major version and minor version
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	// 1.2 set opengl enable core type (非立即渲染模式) 
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-// 2. create window object
-	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGLStudy", NULL, NULL);
-	// set the current window object to OpenGL's drawing stage
-	glfwMakeContextCurrent(window);
-
-	// set up listening to listen for messages about changes in window size
-	glfwSetFramebufferSizeCallback(window, farmeBufferSizeCallBack);
-
-	// set keyboard listening
-	glfwSetKeyCallback(window, keyCallBack);
-
-// ********loading all current version opengl's function by glad
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!app->init())
 	{
-		std::cout << "Failed  load" << std::endl;
 		return -1;
 	}
+
+	//set up listening to listen for messages about changes in window size
+	app->setResizeCallBack(OnResize);
+
+
+	// set keyboard listening
+	app->setKeyBoardCallBack(OnKeyBoard);
+
+	// set mouse
+	app->setMouseCallBack(OnMouseBoard);
 
 	// set openal View and clear color
 	GL_CALL(glViewport(0, 0, 800, 600));
@@ -64,26 +56,15 @@ int main()
 
 
 // 3. execute a window loop
-	while (!glfwWindowShouldClose(window))
+	while (app->update())
 	{
-		// receive and send msg
-
-		/* Check if there are any mouse, keyboard, or other messages 
-		   that need to be processed in the message queue*/
-		// If available, batch process the messages and clear the queue
-		glfwPollEvents();
-
 		// Execute opengl canvas cleaning operation
 		GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 
-
-		// Rendering operations
-
-		// exchange double cache
-		glfwSwapBuffers(window);
+		// 渲染操作
 	}
 
 // 4. Perform relevant cleaning before exiting the program
-	glfwTerminate();
+	app->destroy();
 	return 0;
 }

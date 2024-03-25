@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\application",
+    "\\wrapper"
   ],
+  "SelectedNode": "\\application\\Application.h",
   "PreviewInSolutionExplorer": false
 }
