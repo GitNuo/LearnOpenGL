@@ -4,8 +4,13 @@
 
 /*
 	*target:
-	-create glfw window system
-	-add window change callback function
+	1. 使用glad加载所有当前版本需要的opengl函数
+	2. 查看glad的源代码，并且理解她做了什么
+	3. 函数练习
+		3.1 glViewport：规定视口大小
+		3.2 glClearColor：设置画布清理的颜色
+		3.3 glClear（GL_COLOR_BBUFFERRBIT）：执行画布清理操作
+		3.4 glfwSwapBuffers（window）：执行双缓存切换
 */
 
 // Declare and implement a function that responds to changes in window size
@@ -44,6 +49,18 @@ int main()
 	// set keyboard listening
 	glfwSetKeyCallback(window, keyCallBack);
 
+// ********loading all current version opengl's function by glad
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed  load" << std::endl;
+		return -1;
+	}
+
+	// set openal View and clear color
+	glViewport(0, 0, 800, 600);
+	glClearColor(0.2f, 0.3f, 0.3f, 0.0);
+
+
 // 3. execute a window loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -53,6 +70,14 @@ int main()
 		   that need to be processed in the message queue*/
 		// If available, batch process the messages and clear the queue
 		glfwPollEvents();
+
+		// Execute opengl canvas cleaning operation
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Rendering operations
+
+		// exchange double cache
+		glfwSwapBuffers(window);
 	}
 
 // 4. Perform relevant cleaning before exiting the program
