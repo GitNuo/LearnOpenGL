@@ -9,13 +9,9 @@
 
 /*
 	*target:
-	1 vbo 的创建/销毁（一个、一堆）
-	2 练习绑定 vbo ，练习向 vbo 当中传输数据
-    	-glBindBuffer
-		-glBufferData
-	3 练习 vbo 与多属性数据的存储
-		-SingleBuffer ：每一个属性放在一个单独的 vbo 当中
-		-InterleavedBuffer ：讲所有属性都存储在一个 vbo 当中，并且数据是交叉的
+	1 生成 VAO ，绑定 VAO
+	2 使用 SingleBuffer 策略，进行 VAO 的构建
+	3 使用 InterleavedBuffer 策略，进行 VAO 的构建
 */
 
 void OnResize(int width, int height)
@@ -98,6 +94,24 @@ void prepareSingleBuffer()
 	// color填充数据
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, colorVbo));
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW));
+
+	// 4 生成vao并且绑定
+	GLuint vao = 0;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	// 4 分别将位置/颜色属性的描述信息加入 vao 当中|
+	// 4.1 描述位置属性
+	glBindBuffer(GL_ARRAY_BUFFER, posVbo); //只有绑定了 posVb 下面的属性描述才会与此vbo 相关
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	// 4.2 描述颜色属性
+	glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	glBindVertexArray(0);
 }
 
 void prapareInterleavedBuffer()
@@ -112,8 +126,21 @@ void prapareInterleavedBuffer()
 	GL_CALL(glGenBuffers(1, &pcVbo));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, pcVbo));
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(positionsColors), positionsColors, GL_STATIC_DRAW));
-}
 
+	GLuint vao = 0;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, pcVbo);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, pcVbo);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+}
+ 
 int main()
 {
 	if (!app->init())
